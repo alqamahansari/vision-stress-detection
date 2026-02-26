@@ -5,7 +5,7 @@ import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-train_loader, test_loader = get_dataloaders("data", batch_size=64)
+train_loader, test_loader = get_dataloaders("data", batch_size=16)
 
 print("Class mapping:", train_loader.dataset.classes)
 
@@ -14,7 +14,7 @@ model = EmotionCNN().to(device)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
-num_epochs = 10
+num_epochs = 50
 
 for epoch in range(num_epochs):
     model.train()

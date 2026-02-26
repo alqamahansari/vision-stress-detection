@@ -1,0 +1,155 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  text-align: center;
+}
+
+.app {
+  padding: 40px;
+}
+
+h1 {
+  color: #38bdf8;
+  margin-bottom: 40px;
+}
+
+.mode-selection {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 80px;
+}
+
+.mode-card {
+  background: #1e293b;
+  padding: 50px;
+  border-radius: 20px;
+  width: 280px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.mode-card:hover {
+  transform: translateY(-8px);
+  background: #334155;
+}
+
+.card {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 20px;
+  width: 60%;
+  margin: 0 auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.video {
+  width: 320px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+}
+
+.primary-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+.secondary-btn {
+  background: #334155;
+  color: white;
+}
+
+.secondary-btn:hover {
+  background: #475569;
+}
+
+.back-btn {
+  margin-top: 20px;
+  background: transparent;
+  color: #38bdf8;
+}
+
+.result-section {
+  margin-top: 40px;
+}
+
+.result-card,
+.chart-card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 15px;
+  width: 60%;
+  margin: 20px auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.stress-bar {
+  width: 100%;
+  height: 20px;
+  background: #334155;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.stress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease-in-out;
+}
+
+.feature-container {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mode-selection {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 80px;
+}
+
+.mode-card {
+  background: #1e293b;
+  padding: 50px;
+  border-radius: 20px;
+  width: 280px;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.mode-card:hover {
+  transform: translateY(-8px);
+  background: #334155;
+}
