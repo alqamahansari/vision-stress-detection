@@ -14,11 +14,13 @@ import "./App.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const API_URL = "https://scaling-pancake-g4xjq475jx65cpg5v-8000.app.github.dev";
+const API_URL =
+  "https://scaling-pancake-g4xjq475jx65cpg5v-8000.app.github.dev";
 
 function App() {
   const [mode, setMode] = useState(null);
   const [emotion, setEmotion] = useState("");
+  const [confidence, setConfidence] = useState(0);
   const [stress, setStress] = useState(0);
   const [probs, setProbs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,7 @@ function App() {
 
   const resetResults = () => {
     setEmotion("");
+    setConfidence(0);
     setStress(0);
     setProbs([]);
     setError("");
@@ -47,6 +50,7 @@ function App() {
     try {
       setLoading(true);
       setError("");
+      resetResults();
 
       const formData = new FormData();
       formData.append("file", file);
@@ -59,9 +63,16 @@ function App() {
         }
       );
 
-      setEmotion(response.data.emotion);
-      setStress(response.data.stress_score);
-      setProbs(response.data.probabilities);
+      const data = response.data;
+
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setEmotion(data.emotion);
+        setConfidence(data.confidence || 0);
+        setStress(data.stress_score || 0);
+        setProbs(data.probabilities || []);
+      }
     } catch (err) {
       console.error(err);
       setError("Failed to connect to backend.");
@@ -96,17 +107,17 @@ function App() {
 
     canvas.toBlob((blob) => {
       sendImageToBackend(blob);
-      stopCamera(); // stop camera after capture
+      stopCamera();
     }, "image/jpeg");
   };
 
   const stressLevel =
-    stress < 0.3 ? "Low" : stress < 0.6 ? "Moderate" : "High";
+    stress < 0.33 ? "Low" : stress < 0.66 ? "Moderate" : "High";
 
   const stressColor =
-    stress < 0.3 ? "#22c55e" : stress < 0.6 ? "#f59e0b" : "#ef4444";
+    stress < 0.33 ? "#22c55e" : stress < 0.66 ? "#f59e0b" : "#ef4444";
 
-  const data = {
+  const chartData = {
     labels: [
       "Angry",
       "Disgust",
@@ -206,9 +217,15 @@ function App() {
           <div className="result-card">
             <h2>Predicted Emotion: {emotion}</h2>
 
+            <p>
+              Confidence: {(confidence * 100).toFixed(1)}%
+            </p>
+
             <h3 style={{ color: stressColor }}>
               Stress Level: {stressLevel}
             </h3>
+
+            <p>Stress Score: {(stress * 100).toFixed(1)}%</p>
 
             <div className="stress-bar">
               <div
@@ -221,14 +238,17 @@ function App() {
             </div>
           </div>
 
-          <div className="chart-card">
-            <Bar data={data} />
-          </div>
+          {probs.length > 0 && (
+            <div className="chart-card">
+              <Bar data={chartData} />
+            </div>
+          )}
         </div>
       )}
+
       <footer className="footer">
         Developed using ResNet50 + Transfer Learning + Face Detection
-        </footer>
+      </footer>
     </div>
   );
 }
