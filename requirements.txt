@@ -1,8 +1,8 @@
 torch
 torchvision
-opencv-python
+flask
+flask-cors
+opencv-python-headless
 numpy
-pandas
-matplotlib
-scikit-learn
-streamlit
+pillow
+huggingface_hub

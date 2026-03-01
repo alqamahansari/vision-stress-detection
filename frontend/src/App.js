@@ -14,26 +14,60 @@ import "./App.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+const API_URL = "https://scaling-pancake-g4xjq475jx65cpg5v-8000.app.github.dev";
+
 function App() {
   const [mode, setMode] = useState(null);
   const [emotion, setEmotion] = useState("");
   const [stress, setStress] = useState(0);
   const [probs, setProbs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
+  const resetResults = () => {
+    setEmotion("");
+    setStress(0);
+    setProbs([]);
+    setError("");
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach((track) => {
+        track.stop();
+      });
+      videoRef.current.srcObject = null;
+    }
+  };
+
   const sendImageToBackend = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      setLoading(true);
+      setError("");
 
-    const response = await axios.post(
-      "http://localhost:8000/predict",
-      formData
-    );
+      const formData = new FormData();
+      formData.append("file", file);
 
-    setEmotion(response.data.emotion);
-    setStress(response.data.stress_score);
-    setProbs(response.data.probabilities);
+      const response = await axios.post(
+        `${API_URL}/predict`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      setEmotion(response.data.emotion);
+      setStress(response.data.stress_score);
+      setProbs(response.data.probabilities);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to connect to backend.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpload = (e) => {
@@ -42,8 +76,13 @@ function App() {
   };
 
   const startCamera = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    videoRef.current.srcObject = stream;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error(err);
+      setError("Camera permission denied.");
+    }
   };
 
   const captureFrame = () => {
@@ -57,6 +96,7 @@ function App() {
 
     canvas.toBlob((blob) => {
       sendImageToBackend(blob);
+      stopCamera(); // stop camera after capture
     }, "image/jpeg");
   };
 
@@ -86,9 +126,13 @@ function App() {
 
   return (
     <div className="app">
-      <h1>🧠 Workplace Stress Intelligence</h1>
+      <div className="title-section">
+        <h1>🧠 Workplace Stress Intelligence</h1>
+        <p className="subtitle">
+          An Explainable Deep Learning Framework for Stress Estimation
+        </p>
+      </div>
 
-      {/* ================= SELECTION SCREEN ================= */}
       {mode === null && (
         <div className="mode-selection">
           <div className="mode-card" onClick={() => setMode("camera")}>
@@ -103,7 +147,6 @@ function App() {
         </div>
       )}
 
-      {/* ================= UPLOAD SCREEN ================= */}
       {mode === "upload" && (
         <div className="feature-container">
           <div className="card">
@@ -111,13 +154,18 @@ function App() {
             <input type="file" onChange={handleUpload} />
           </div>
 
-          <button className="back-btn" onClick={() => setMode(null)}>
+          <button
+            className="back-btn"
+            onClick={() => {
+              resetResults();
+              setMode(null);
+            }}
+          >
             ← Back
           </button>
         </div>
       )}
 
-      {/* ================= CAMERA SCREEN ================= */}
       {mode === "camera" && (
         <div className="feature-container">
           <div className="card">
@@ -137,14 +185,23 @@ function App() {
             </div>
           </div>
 
-          <button className="back-btn" onClick={() => setMode(null)}>
+          <button
+            className="back-btn"
+            onClick={() => {
+              stopCamera();
+              resetResults();
+              setMode(null);
+            }}
+          >
             ← Back
           </button>
         </div>
       )}
 
-      {/* ================= RESULT SECTION ================= */}
-      {emotion && (
+      {loading && <p>Analyzing image...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {emotion && !loading && (
         <div className="result-section">
           <div className="result-card">
             <h2>Predicted Emotion: {emotion}</h2>
@@ -169,6 +226,9 @@ function App() {
           </div>
         </div>
       )}
+      <footer className="footer">
+        Developed using ResNet50 + Transfer Learning + Face Detection
+        </footer>
     </div>
   );
 }

@@ -1,4 +1,14 @@
-venv/
+# Python cache
 __pycache__/
-*.pth
 *.pyc
+*.pyo
+
+# Model files
+*.pth
+*.pt
+
+# HuggingFace cache (optional but recommended)
+.cache/
+
+# OS files
+.DS_Store
